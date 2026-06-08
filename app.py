@@ -255,7 +255,7 @@ with tab_summary:
     st.markdown("---")
     st.subheader("모듈별 처방 효과 비교")
 
-    _viz_tab1, _viz_tab2 = st.tabs(["📈 DSS 개선율 (%)", "📊 Module C — 누적 P(win)"])
+    _viz_tab1, _viz_tab2 = st.tabs(["📈 모듈별 전후 비교", "📊 Module C — 누적 P(win)"])
 
     with _viz_tab1:
         # % 개선율 기준 단일 차트 — 직관적, 단위 통일
@@ -283,7 +283,9 @@ with tab_summary:
                 text=[f"{_y:.4f}"], textposition="outside",
                 marker_color=_col, showlegend=_lg,
             ), row=1, col=1)
-        fig_sub.update_yaxes(title_text="기대득점/이닝 (RE, ↑높을수록 좋음)",
+        fig_sub.update_yaxes(title_text="RE (↑좋음)",
+                             title_font=dict(size=11),
+                             title_standoff=8,
                              range=[0, A['order_re'] * 1.38], row=1, col=1)
 
         # B: 기대실점/이닝 = RISP ERA / 9 (낮을수록 좋음)
@@ -298,7 +300,9 @@ with tab_summary:
                 text=[_lbl], textposition="outside",
                 marker_color=_col, showlegend=False,
             ), row=1, col=2)
-        fig_sub.update_yaxes(title_text="이닝당 기대실점 (↓낮을수록 좋음)",
+        fig_sub.update_yaxes(title_text="기대실점/이닝 (↓좋음)",
+                             title_font=dict(size=11),
+                             title_standoff=8,
                              range=[0, _b_before_runs * 1.38], row=1, col=2)
 
         # C: P(win)/경기 (높을수록 좋음)
@@ -311,7 +315,9 @@ with tab_summary:
                 text=[f"{_y:.3f}"], textposition="outside",
                 marker_color=_col, showlegend=_lg,
             ), row=1, col=3)
-        fig_sub.update_yaxes(title_text="P(win) 평균/경기 (↑높을수록 좋음)",
+        fig_sub.update_yaxes(title_text="P(win)/경기 (↑좋음)",
+                             title_font=dict(size=11),
+                             title_standoff=8,
                              range=[0, _c_ilp_per * 1.38], row=1, col=3)
 
         fig_sub.update_layout(
@@ -443,7 +449,7 @@ with tab_b:
 
     # ── k 슬라이더 ────────────────────────────────────────────────────
     st.markdown("### 🎚️ Shrinkage 강도 조절 (k)")
-    st.caption("k값이 클수록 리그 평균에 의존 (시즌 초반 권장), 작을수록 이번 시즌 실측 반영")
+    st.caption("k = 소표본 보정 강도 | k↑ 리그 평균 의존 (시즌 초) · k↓ 실측 데이터 반영 (시즌 후)")
 
     col_sl, col_sl_info = st.columns([2, 1.5])
     with col_sl:
@@ -455,11 +461,11 @@ with tab_b:
         )
     with col_sl_info:
         if k_val <= 15:
-            st.info(f"🟢 **k={k_val}** — 시즌 후반: 실측 강반영")
+            st.info(f"**k={k_val}** — 시즌 후반: 실측 반영")
         elif k_val <= 40:
-            st.info(f"🟡 **k={k_val}** — 중반 균형 (기본값: 20)")
+            st.info(f"**k={k_val}** — 시즌 중반 균형 (기본값)")
         else:
-            st.info(f"🔴 **k={k_val}** — 시즌 초반: 리그 평균 의존")
+            st.info(f"**k={k_val}** — 시즌 초반: 리그 평균 의존")
 
     # ── 불펜 순위표 ───────────────────────────────────────────────────
     df_bullpen = compute_bullpen_ranking(k_val)
